@@ -165,7 +165,7 @@ func TestReduce(t *testing.T) {
 }
 
 func makeIter(max int) Iter {
-	it := make(Iter)
+	it := make(chan int)
 	go func() {
 		defer close(it)
 		for i := 0; i < max; i++ {

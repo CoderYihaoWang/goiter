@@ -8,14 +8,14 @@ package main
 // Iter 类型展示了怎样使用 Go 语言的 channel 来模拟迭代器。
 // 提示：本程序仅用作探索展示使用。简便起见，我们只支持 int 作为元素类型，
 // 并且在下面的方法中，许多必要的边界检查和错误处理都被略过了。
-type Iter chan int
+type Iter <-chan int
 
 // Map creates a new Iter whose elements are projected from those of the original Iter
 // by applying the fn argument.
 //
 // Map 方法生成一个新的迭代器，并使用参数 fn 将旧迭代器中的元素映射到新迭代器中。
 func (it Iter) Map(fn func(int) int) Iter {
-	ch := make(Iter)
+	ch := make(chan int)
 	go func() {
 		defer close(ch)
 		for x := range it {
@@ -30,7 +30,7 @@ func (it Iter) Map(fn func(int) int) Iter {
 //
 // Filter 方法生成一个新的迭代器，只保留旧迭代器中满足 pred 条件的元素。
 func (it Iter) Filter(pred func(int) bool) Iter {
-	ch := make(Iter)
+	ch := make(chan int)
 	go func() {
 		defer close(ch)
 		for x := range it {
@@ -60,7 +60,7 @@ func (it Iter) Reduce(init int, fn func(int, int) int) int {
 //
 // Range 方法生成一个包含 [from, to) 区间中整数的迭代器。
 func Range(from, to int) Iter {
-	ch := make(Iter)
+	ch := make(chan int)
 	go func() {
 		defer close(ch)
 		for i := from; i < to; i++ {
@@ -74,7 +74,7 @@ func Range(from, to int) Iter {
 //
 // Seq 方法生成包含从0开始的整数的无穷迭代器。
 func Seq() Iter {
-	ch := make(Iter)
+	ch := make(chan int)
 	n := 0
 	go func() {
 		for {
@@ -90,7 +90,7 @@ func Seq() Iter {
 // Take 方法创建一个新的迭代器，只包含原先迭代器中的最多前 n 个元素。
 func (it Iter) Take(n int) Iter {
 	count := 0
-	ch := make(Iter)
+	ch := make(chan int)
 	go func() {
 		defer close(ch)
 		for x := range it {
@@ -110,7 +110,7 @@ func (it Iter) Take(n int) Iter {
 // Drop 方法创建一个新的迭代器，跳过原先迭代器中的最多前 n 个元素。
 func (it Iter) Drop(n int) Iter {
 	count := 0
-	ch := make(Iter)
+	ch := make(chan int)
 	go func() {
 		defer close(ch)
 		for x := range it {
