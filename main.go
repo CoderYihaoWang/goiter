@@ -12,9 +12,9 @@ func main() {
 	// 打印 1 到 20 的平方
 	fmt.Printf("Squares of 1 ~ 20: %v\n", squares(20))
 
-	// print the factorial of 15
-	// 打印 15 的阶乘
-	fmt.Printf("Factorial of 15: %d\n", fac(15))
+	// print the factorial of 10
+	// 打印 10 的阶乘
+	fmt.Printf("Factorial of 10: %d\n", fac(10))
 
 	// print the first 100 prime numbers
 	// 打印前 100 个质数
@@ -32,7 +32,7 @@ func squares(n int) []int {
 // the factorial of positive integer n
 // 计算正整数 n 的阶乘。
 func fac(n int) int {
-	return Range(1, n).
+	return Range(1, n+1).
 		Reduce(1, func(acc, cur int) int { return acc * cur })
 }
 

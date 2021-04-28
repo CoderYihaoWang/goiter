@@ -238,14 +238,14 @@ func main() {
 // main.go
 
 func fac(n int) int {
-	return Range(1, n).
+	return Range(1, n+1).
 		Reduce(1, func(acc, cur int) int { return acc * cur })
 }
 
 func main() {
     // ...
 
-    fmt.Printf("15的阶乘: %d\n", fac(15))
+    fmt.Printf("10的阶乘: %d\n", fac(15))
 
     // ...
 }
@@ -254,7 +254,7 @@ func main() {
 
 运行程序将输出：
 ```
-15的阶乘：87178291200
+10的阶乘：3628800
 ```
 
 ## 例子3：输出前 n 个质数
