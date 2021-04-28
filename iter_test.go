@@ -40,16 +40,7 @@ func TestSeq(t *testing.T) {
 
 func TestTakeIterLargerThanLimit(t *testing.T) {
 	size, limit := 100, 50
-	it := func() Iter {
-		it := make(Iter)
-		go func() {
-			defer close(it)
-			for i := 0; i < size; i++ {
-				it <- i
-			}
-		}()
-		return it
-	}()
+	it := makeIter(size)
 	var expected, actual []int
 	for i := 0; i < limit; i++ {
 		expected = append(expected, i)
@@ -65,16 +56,7 @@ func TestTakeIterLargerThanLimit(t *testing.T) {
 
 func TestTakeIterSmallerThanLimit(t *testing.T) {
 	size, limit := 50, 100
-	it := func() Iter {
-		it := make(Iter)
-		go func() {
-			defer close(it)
-			for i := 0; i < size; i++ {
-				it <- i
-			}
-		}()
-		return it
-	}()
+	it := makeIter(size)
 	var expected, actual []int
 	for i := 0; i < size; i++ {
 		expected = append(expected, i)
@@ -90,16 +72,7 @@ func TestTakeIterSmallerThanLimit(t *testing.T) {
 
 func TestDropIterLargerThanLimit(t *testing.T) {
 	size, limit := 100, 50
-	it := func() Iter {
-		it := make(Iter)
-		go func() {
-			defer close(it)
-			for i := 0; i < size; i++ {
-				it <- i
-			}
-		}()
-		return it
-	}()
+	it := makeIter(size)
 	var expected, actual []int
 	for i := limit; i < size; i++ {
 		expected = append(expected, i)
@@ -115,16 +88,7 @@ func TestDropIterLargerThanLimit(t *testing.T) {
 
 func TestDropIterSmallerThanLimit(t *testing.T) {
 	size, limit := 50, 100
-	it := func() Iter {
-		it := make(Iter)
-		go func() {
-			defer close(it)
-			for i := 0; i < size; i++ {
-				it <- i
-			}
-		}()
-		return it
-	}()
+	it := makeIter(size)
 	var expected, actual []int // expected will remain nil
 	for x := range it.Drop(limit) {
 		actual = append(actual, x)
@@ -136,19 +100,10 @@ func TestDropIterSmallerThanLimit(t *testing.T) {
 }
 
 func TestCollect(t *testing.T) {
-	end := 100
-	it := func() Iter {
-		it := make(Iter)
-		go func() {
-			defer close(it)
-			for i := 0; i < end; i++ {
-				it <- i
-			}
-		}()
-		return it
-	}()
+	size := 100
+	it := makeIter(size)
 	var expected, actual []int
-	for i := 0; i < end; i++ {
+	for i := 0; i < size; i++ {
 		expected = append(expected, i)
 	}
 	actual = it.Collect()
@@ -159,21 +114,12 @@ func TestCollect(t *testing.T) {
 }
 
 func TestMap(t *testing.T) {
-	s := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	it := func() Iter {
-		it := make(Iter)
-		go func() {
-			defer close(it)
-			for x := range s {
-				it <- x
-			}
-		}()
-		return it
-	}()
+	size := 10
+	it := makeIter(size)
 	double := func(x int) int { return x * x }
 	var expected, actual []int
-	for x := range s {
-		expected = append(expected, double(x))
+	for i := 0; i < size; i++ {
+		expected = append(expected, double(i))
 	}
 	for x := range it.Map(double) {
 		actual = append(actual, x)
@@ -185,22 +131,13 @@ func TestMap(t *testing.T) {
 }
 
 func TestFilter(t *testing.T) {
-	s := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	it := func() Iter {
-		it := make(Iter)
-		go func() {
-			defer close(it)
-			for x := range s {
-				it <- x
-			}
-		}()
-		return it
-	}()
+	size := 10
+	it := makeIter(size)
 	isEven := func(x int) bool { return x%2 == 0 }
 	var expected, actual []int
-	for x := range s {
-		if isEven(x) {
-			expected = append(expected, x)
+	for i := 0; i < size; i++ {
+		if isEven(i) {
+			expected = append(expected, i)
 		}
 	}
 	for x := range it.Filter(isEven) {
@@ -213,25 +150,27 @@ func TestFilter(t *testing.T) {
 }
 
 func TestReduce(t *testing.T) {
-	s := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	it := func() Iter {
-		it := make(Iter)
-		go func() {
-			defer close(it)
-			for x := range s {
-				it <- x
-			}
-		}()
-		return it
-	}()
+	size := 10
+	it := makeIter(size)
 	add := func(acc, cur int) int { return acc + cur }
 	var expected, actual int
-	for x := range s {
-		expected += x
+	for i := 0; i < size; i++ {
+		expected += i
 	}
 	actual = it.Reduce(0, add)
 
 	if expected != actual {
 		t.Errorf("Reduce(add): expecting %d, got %d", expected, actual)
 	}
+}
+
+func makeIter(max int) Iter {
+	it := make(Iter)
+	go func() {
+		defer close(it)
+		for i := 0; i < max; i++ {
+			it <- i
+		}
+	}()
+	return it
 }
