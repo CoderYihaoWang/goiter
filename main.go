@@ -8,17 +8,17 @@ import "fmt"
 // Test:
 // go test iter.go iter_test.go
 func main() {
-	// print the squares of 1 through 10
+	// print the squares of 1 through 20
 	// 打印 1 到 20 的平方
-	fmt.Printf("Squares of 1 ~ 10: %v\n", squares(20))
+	fmt.Printf("Squares of 1 ~ 20: %v\n", squares(20))
 
 	// print the factorial of 15
 	// 打印 15 的阶乘
 	fmt.Printf("Factorial of 15: %d\n", fac(15))
 
-	// print the first 20 prime numbers
+	// print the first 100 prime numbers
 	// 打印前 100 个质数
-	fmt.Printf("The first 20 prime numbers: %v\n", primes(100))
+	fmt.Printf("The first 100 prime numbers: %v\n", primes(100))
 }
 
 // squares of 1 ~ n, inclusive
